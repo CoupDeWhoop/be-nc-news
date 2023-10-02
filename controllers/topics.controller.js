@@ -1,10 +1,18 @@
-const { selectTopics } = require("../models/topics.model.js")
+const { fetchTopics } = require("../models/topics.model.js")
+const endpoints = require('../endpoints.json')
 
 exports.getTopics = (req, res, next) => {
-    selectTopics().then((topics) => {
-        res.status(200).send({ topics});
+    fetchTopics().then((topics) => {
+        res.status(200).send({topics});
       }).catch((err) => {
         console.log(err)
         next(err);
       })
+}
+
+exports.getEndpoints = (req, res, next) => {
+    res.status(200).send({endpoints})
+        .catch((err) => {
+            next(err)
+        })
 }
