@@ -47,10 +47,9 @@ describe('GET requests', () => {
           .expect(200)
           .then(({body}) => {
             const {endpoints} = body;
-            expect(typeof endpoints).toBe('object')
-            expect(Object.entries(endpoints).length).toBe(Object.entries(endpointsCopy).length)
+            expect(endpoints).toEqual(endpointsCopy)
             })
-          })
         })
+    })
 
 });
