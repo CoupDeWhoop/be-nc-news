@@ -8,9 +8,5 @@ exports.fetchTopics = () => {
 
     return db.query(query).then((result) => {
         return result.rows;
-        });
-}
-
-exports.fetchEndpoints = () => {
-    return endpoints
+    });
 }
