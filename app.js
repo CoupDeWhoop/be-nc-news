@@ -16,9 +16,11 @@ app.all('/*', (req, res, next) => {
 })
 
 app.use((err, req, res, next) => {
-    console.log(err);
-    res.status(err.status).send(err)
-
+    if (err.code === "22P02") {
+        res.status(400).send({msg: "invalid request"})
+    } else if (err.status) {
+        res.status(err.status).send(err)
+    }
 });
 
 module.exports = app;
