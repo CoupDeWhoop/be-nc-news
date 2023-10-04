@@ -111,4 +111,40 @@ describe('GET requests', () => {
             })
         });
     });
+
+    describe('Get /api/articles/:article_id/comments', () => {
+        test('200 - responds with array of comments for the given article_id', () => {
+            return request(app)
+            .get('/api/articles/1/comments')
+            .expect(200)
+            .then(({body}) => {
+                expect(body.comments).toHaveLength(11)
+                body.comments.forEach((comment) => {
+                    expect(comment).toHaveProperty("comment_id", expect.any(Number))
+                    expect(comment).toHaveProperty("votes", expect.any(Number))
+                    expect(comment).toHaveProperty("created_at", expect.any(String))
+                    expect(comment).toHaveProperty("author", expect.any(String))
+                    expect(comment).toHaveProperty("body", expect.any(String))
+                    expect(comment).toHaveProperty("article_id", expect.any(Number))
+                }) 
+                expect(body.comments).toBeSorted({ key: "created_at", descending: true })
+            })
+        })
+        test('404 - article_id not found ', () => {
+            return request(app)
+            .get('/api/articles/999/comments')
+            .expect(404)
+            .then(({body}) => {
+                expect(body.msg).toBe('article_id not found')
+            })
+        })
+        test('400 - bad request', () => {
+            return request(app)
+            .get('/api/articles/itchy/comments')
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe('invalid request')
+            })
+        })
+    });
 });
