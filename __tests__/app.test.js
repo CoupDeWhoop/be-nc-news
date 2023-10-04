@@ -1,6 +1,7 @@
 const app = require('../app');
 const request = require("supertest");
 const db = require('../db/connection');
+const format = require('pg-format');
 const seed = require('../db/seeds/seed')
 const data = require('../db/data/test-data/index')
 const endpointsCopy = require('../endpoints.json')
@@ -112,7 +113,7 @@ describe('GET requests', () => {
         });
     });
 
-    describe('Get /api/articles/:article_id/comments', () => {
+    describe('GET /api/articles/:article_id/comments', () => {
         test('200 - responds with array of comments for the given article_id', () => {
             return request(app)
             .get('/api/articles/1/comments')
@@ -125,17 +126,25 @@ describe('GET requests', () => {
                     expect(comment).toHaveProperty("created_at", expect.any(String))
                     expect(comment).toHaveProperty("author", expect.any(String))
                     expect(comment).toHaveProperty("body", expect.any(String))
-                    expect(comment).toHaveProperty("article_id", expect.any(Number))
+                    expect(comment).toHaveProperty("article_id", 1)
                 }) 
                 expect(body.comments).toBeSorted({ key: "created_at", descending: true })
             })
         })
+        test('200 - responds with message when given article_id valid but has no comments', () => {
+            return request(app)
+            .get('/api/articles/2/comments')
+            .expect(200)
+            .then(({body}) => {
+                expect(body.msg).toBe('article_id has no comments')
+            })
+        });
         test('404 - article_id not found ', () => {
             return request(app)
             .get('/api/articles/999/comments')
             .expect(404)
             .then(({body}) => {
-                expect(body.msg).toBe('article_id not found')
+                expect(body.msg).toBe('No articles found for article_id: 999')
             })
         })
         test('400 - bad request', () => {
@@ -147,4 +156,70 @@ describe('GET requests', () => {
             })
         })
     });
+
+
+});
+
+describe('POST requests', () => {
+    
+    describe('POST /api/articles/:article_id/comments', () => {
+        test('201 - responds with the posted comment', () => {
+            const newComment = {body: 'Wonderful, simply wonderful', username: 'rogersop'}
+            return request(app)
+            .post('/api/articles/2/comments')
+            .send(newComment)
+            .expect(201)
+            .then(({ body }) => {
+                expect(body.comment).toMatchObject({
+                    comment_id: 19,
+                    body: 'Wonderful, simply wonderful',
+                    article_id: 2,
+                    author: 'rogersop',
+                    votes: 0
+                })
+                expect(body.comment).toHaveProperty("created_at")
+            })
+        });
+        test('404 - article_id not found', () => {
+            const newComment = {body: 'Wonderful, simply wonderful', username: 'rogersop'}
+            return request(app)
+            .post('/api/articles/999/comments')
+            .send(newComment)
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe('provided key not found')
+            })
+        });
+        test('404 - user not found', () => {
+            const newComment = {body: 'Wonderful, simply wonderful', username: 'unknownUser'}
+            return request(app)
+            .post('/api/articles/2/comments')
+            .send(newComment)
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe('provided key not found')
+            })
+        });
+        test('400 - comment body not correctly input', () => {
+            const malformed = {username: 'rogersop'}
+            return request(app)
+            .post('/api/articles/2/comments')
+            .send(malformed)
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Please provide comment body.')
+            })
+        })
+        test('400 - comment username not provided', () => {
+            const malformed2 = {body: 'Great stuff'}
+            return request(app)
+            .post('/api/articles/2/comments')
+            .send(malformed2)
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Please provide username.')
+            })
+        })
+
+    })
 });

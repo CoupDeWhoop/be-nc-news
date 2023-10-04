@@ -2,7 +2,9 @@ const express = require('express');
 const app = express();
 const { getTopics, getEndpoints } = require("./controllers/topics.controller.js");
 const { getArticleById, getArticles} = require("./controllers/articles.controller.js");
-const { getCommentsById } = require("./controllers/comments.controller.js");
+const { getCommentsById, postComment } = require("./controllers/comments.controller.js");
+
+app.use(express.json());
 
 app.get('/api', getEndpoints)
 
@@ -14,6 +16,8 @@ app.get('/api/articles', getArticles)
 
 app.get('/api/articles/:article_id/comments', getCommentsById)
 
+app.post('/api/articles/:article_id/comments', postComment)
+
 app.all('/*', (req, res, next) => {
     res.status(404).send({msg: 'path not found'})
 })
@@ -21,6 +25,8 @@ app.all('/*', (req, res, next) => {
 app.use((err, req, res, next) => {
     if (err.code === "22P02") {
         res.status(400).send({msg: "invalid request"})
+    } else if (err.code === "23503") {
+        res.status(404).send({msg: "provided key not found"})
     } else if (err.status) {
         res.status(err.status).send(err)
     }
