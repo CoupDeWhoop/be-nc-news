@@ -2,6 +2,7 @@ const db = require('../db/connection');
 
 
 exports.fetchArticleById = (id) => {
+
     return db
     .query(`
         SELECT * FROM articles
@@ -9,7 +10,7 @@ exports.fetchArticleById = (id) => {
     `, [id])
     .then(({rows}) => {
         if (rows.length === 0) { 
-            return Promise.reject({status: 404, msg: `No articles found for article_id: ${id}`})
+            return Promise.reject({status: 404, msg: `Article ${id} not found`})
         } else {
             return rows[0]
         }
@@ -39,8 +40,7 @@ exports.fetchAllArticles = () => {
     });
 }
 
-exports.updateVotesByArticleId = (id, update = 0) => {
-    console.log(update)    
+exports.updateVotesByArticleId = (id, update = 0) => {    
     return db.query(`
             UPDATE articles
             SET votes = votes + $2

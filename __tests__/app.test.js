@@ -77,7 +77,7 @@ describe('GET requests', () => {
             .get("/api/articles/49")
             .expect(404)
             .then(({body}) => {
-                expect(body.msg).toBe('No articles found for article_id: 49')
+                expect(body.msg).toBe('Article 49 not found')
             })
         });
         test('status 400 - article_id is a number', () => {
@@ -144,7 +144,7 @@ describe('GET requests', () => {
             .get('/api/articles/999/comments')
             .expect(404)
             .then(({body}) => {
-                expect(body.msg).toBe('No articles found for article_id: 999')
+                expect(body.msg).toBe('Article 999 not found')
             })
         })
         test('400 - bad request', () => {
@@ -317,6 +317,36 @@ describe('PATCH', () => {
                 .then(({body}) => {
                     expect(body.msg).toBe('invalid request')
                 })
+        });
+    });
+});
+
+describe('DELETE', () => {
+    
+    describe('DELETE /api/comments/:comment_id', () => {
+        test('204 - should delete a comment with the given comment id,', () => {
+            return request(app)
+            .delete('/api/comments/1')
+            .expect(204)
+            .then(({ body }) => {
+                expect(!body)
+            })
+        });
+        test('404 - should return an error if the provided comment_id is invalid', () => {
+            return request(app)
+            .delete('/api/comments/35')
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe("Comment does not exist")
+            })
+        });
+        test('400 - should return error if comment_id invalid', () => {
+            return request(app)
+            .delete('/api/comments/tired')
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe("invalid request")
+            })
         });
     });
 });
