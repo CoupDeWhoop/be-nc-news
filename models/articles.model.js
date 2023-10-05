@@ -40,21 +40,17 @@ exports.fetchAllArticles = () => {
 }
 
 exports.updateVotesByArticleId = (id, update) => {
-    
-    const votesQuery = (id, update) => {
+    console.log(update)
         return db.query(`
             UPDATE articles
             SET votes = votes + $2
             WHERE article_id = $1
             RETURNING *;
             `, [id, update.inc_votes])
-        .then(({rows}) => rows[0])
-    }
-
-
-    return Promise.all([votesQuery(id, update), this.fetchArticleById(id)])
-    .then(results => {
-        return results[0]
-    })
- 
+        .then(({ rows }) => {
+            if (rows.length === 0) return ""
+                
+            return rows[0]
+            
+        })
 }

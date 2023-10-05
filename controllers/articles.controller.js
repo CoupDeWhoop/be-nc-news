@@ -18,8 +18,14 @@ exports.getArticles = (req, res, next) => {
 
 exports.patchVotesByArticleId = (req, res, next) => {
     const { article_id } = req.params;
-    const update = req.body;
+    let update = req.body;
+
+    //if input an empty object send back orginal article
+    if(Object.keys(update).length === 0) {
+        update = { inc_votes : 0 };
+    } 
+
     return updateVotesByArticleId(article_id, update)
-        .then(article => res.status(201).send({article}))
+        .then(article => res.status(200).send({article}))
         .catch(err => next(err));
 }

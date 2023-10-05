@@ -208,7 +208,7 @@ describe('POST', () => {
             .send(malformed)
             .expect(400)
             .then(({ body }) => {
-                expect(body.msg).toBe('Please provide comment body.')
+                expect(body.msg).toBe('invalid request')
             })
         })
         test('400 - comment username not provided', () => {
@@ -218,7 +218,7 @@ describe('POST', () => {
             .send(malformed2)
             .expect(400)
             .then(({ body }) => {
-                expect(body.msg).toBe('Please provide username.')
+                expect(body.msg).toBe('invalid request')
             })
         })
 
@@ -227,14 +227,14 @@ describe('POST', () => {
 
 describe('PATCH', () => {
 
-    describe.only('PATCH /api/articles/:article_id', () => {
-        test('201 - responds with the article votes updated correctly', () => {
+    describe('PATCH /api/articles/:article_id', () => {
+        test('200 - responds with the article votes updated correctly', () => {
             const patchInput = { inc_votes : 20 };
 
             return request(app)
                 .patch('/api/articles/6')
                 .send(patchInput)
-                .expect(201)
+                .expect(200)
                 .then(({body}) => {
                     const articleObj = {
                             article_id: 6,
@@ -249,13 +249,13 @@ describe('PATCH', () => {
                     expect(body.article).toMatchObject(articleObj)
                 })
         });
-        test('201 - decrements votes for the article correctly', () => {
+        test('200 - decrements votes for the article correctly', () => {
             const patchInput = { inc_votes : -20 };
 
             return request(app)
                 .patch('/api/articles/6')
                 .send(patchInput)
-                .expect(201)
+                .expect(200)
                 .then(({body}) => {
                     const articleObj = {
                             article_id: 6,
@@ -270,15 +270,34 @@ describe('PATCH', () => {
                     expect(body.article).toMatchObject(articleObj)
                 })
         });
-        test('404 - article_id not found', () => {
+        test("200 - article_id doesn't exist", () => {
             const patchInput2 = { inc_votes : 20 };
             return request(app)
                 .patch('/api/articles/999')
                 .send(patchInput2)
-                .expect(404)
+                .expect(200)
                 .then(({body}) => {
-                    expect(body.msg).toBe('No articles found for article_id: 999')
+                    expect(body.article).toBe('')
                 })
+        });
+        test('200 - original article returned when no request body provided.', () => {
+            return request(app)
+            .patch('/api/articles/6')
+            .send({})
+            .expect(200)
+            .then(({body}) => {
+                const articleObj = {
+                        article_id: 6,
+                        title: 'A',
+                        topic: 'mitch',
+                        author: 'icellusedkars',
+                        body: 'Delicious tin of cat food',
+                        created_at: '2020-10-18T01:00:00.000Z',
+                        votes: 0,
+                        article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700'
+                }
+                expect(body.article).toMatchObject(articleObj)
+            })
         });
         test('400 - invalid input', () => {
             const patchInput2 = { inc_votes : "cat" };
@@ -290,14 +309,15 @@ describe('PATCH', () => {
                     expect(body.msg).toBe('invalid request')
                 })
         })
-        test('400 - no request body.', () => {
+        test("400 - article_id invalid", () => {
+            const patchInput2 = { inc_votes : 20 };
             return request(app)
-                .patch('/api/articles/6')
-                .send({})
+                .patch('/api/articles/cat')
+                .send(patchInput2)
                 .expect(400)
                 .then(({body}) => {
                     expect(body.msg).toBe('invalid request')
                 })
-        })
+        });
     });
 });

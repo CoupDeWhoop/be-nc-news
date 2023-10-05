@@ -1,9 +1,7 @@
 const db = require('../db/connection');
-const { checkArticleIdExists } = require("../models/articles.model.js")
+const { fetchArticleById } = require('../models/articles.model')
 
 exports.fetchCommentsById = (article_id) => {
-  
-
 
     const fetchCommentsPromise = (article_id) =>{
         
@@ -32,14 +30,6 @@ exports.fetchCommentsById = (article_id) => {
 
 
 exports.insertComment = (body, article_id, username) => {
-
-    if (!username) {
-        return Promise.reject({status: 400, msg: 'Please provide username.'})
-    }
-
-    if (!body) {
-        return Promise.reject({status: 400, msg: 'Please provide comment body.'})
-    }
 
     return db
         .query(`
