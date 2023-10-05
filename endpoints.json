@@ -26,6 +26,19 @@
       ]
     }
   },
+  "GET /api/users": {
+    "description": "serves an array of user objects",
+    "queries": [],
+    "exampleResponse": {
+      "articles": [
+        {
+          "username": "user",
+          "name": "james",
+          "avatar_url": "<url>"
+        }
+      ]
+    }
+  },
   "GET /api/articles/:article_id": {
     "description": "serves an object containing the article body and the associated properties ",
     "queries": [],
