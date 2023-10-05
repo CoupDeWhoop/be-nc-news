@@ -39,17 +39,18 @@ exports.fetchAllArticles = () => {
     });
 }
 
-exports.updateVotesByArticleId = (id, update) => {
-    console.log(update)
-        return db.query(`
+exports.updateVotesByArticleId = (id, update = 0) => {
+    console.log(update)    
+    return db.query(`
             UPDATE articles
             SET votes = votes + $2
             WHERE article_id = $1
             RETURNING *;
-            `, [id, update.inc_votes])
+            `, [id, update])
         .then(({ rows }) => {
-            if (rows.length === 0) return ""
-                
+            if (rows.length === 0) {
+                return Promise.reject({status: 200, msg: `Article ${id} not found`})
+            }
             return rows[0]
             
         })

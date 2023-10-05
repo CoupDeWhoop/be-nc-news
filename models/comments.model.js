@@ -12,7 +12,7 @@ exports.fetchCommentsById = (article_id) => {
     
         return db.query(query, [article_id]).then((result) => {
             if (result.rows.length === 0) {
-                return Promise.reject({status:200, msg: "article_id has no comments"})
+                return Promise.reject({status:200, msg: `Article ${article_id} has no comments`})
             } else {
                 return result.rows;
             }

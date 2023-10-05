@@ -136,7 +136,7 @@ describe('GET requests', () => {
             .get('/api/articles/2/comments')
             .expect(200)
             .then(({body}) => {
-                expect(body.msg).toBe('article_id has no comments')
+                expect(body.msg).toBe('Article 2 has no comments')
             })
         });
         test('404 - article_id not found ', () => {
@@ -157,7 +157,6 @@ describe('GET requests', () => {
         })
     });
 
-
 });
 
 describe('POST', () => {
@@ -176,9 +175,9 @@ describe('POST', () => {
                     body: 'Wonderful, simply wonderful',
                     article_id: 2,
                     author: 'rogersop',
-                    votes: 0
+                    votes: 0,
+                    created_at: expect.any(String)
                 })
-                expect(body.comment).toHaveProperty("created_at")
             })
         });
         test('404 - article_id not found', () => {
@@ -277,7 +276,7 @@ describe('PATCH', () => {
                 .send(patchInput2)
                 .expect(200)
                 .then(({body}) => {
-                    expect(body.article).toBe('')
+                    expect(body.msg).toBe('Article 999 not found')
                 })
         });
         test('200 - original article returned when no request body provided.', () => {
