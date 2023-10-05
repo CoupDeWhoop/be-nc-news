@@ -160,9 +160,10 @@ describe('GET requests', () => {
 
 });
 
-describe('POST requests', () => {
+describe('POST', () => {
     
     describe('POST /api/articles/:article_id/comments', () => {
+        
         test('201 - responds with the posted comment', () => {
             const newComment = {body: 'Wonderful, simply wonderful', username: 'rogersop'}
             return request(app)
@@ -200,7 +201,7 @@ describe('POST requests', () => {
                 expect(body.msg).toBe('provided key not found')
             })
         });
-        test('400 - comment body not correctly input', () => {
+        test('400 - comment body not provided', () => {
             const malformed = {username: 'rogersop'}
             return request(app)
             .post('/api/articles/2/comments')
@@ -222,4 +223,81 @@ describe('POST requests', () => {
         })
 
     })
+});
+
+describe('PATCH', () => {
+
+    describe.only('PATCH /api/articles/:article_id', () => {
+        test('201 - responds with the article votes updated correctly', () => {
+            const patchInput = { inc_votes : 20 };
+
+            return request(app)
+                .patch('/api/articles/6')
+                .send(patchInput)
+                .expect(201)
+                .then(({body}) => {
+                    const articleObj = {
+                            article_id: 6,
+                            title: 'A',
+                            topic: 'mitch',
+                            author: 'icellusedkars',
+                            body: 'Delicious tin of cat food',
+                            created_at: '2020-10-18T01:00:00.000Z',
+                            votes: 20,
+                            article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700'
+                    }
+                    expect(body.article).toMatchObject(articleObj)
+                })
+        });
+        test('201 - decrements votes for the article correctly', () => {
+            const patchInput = { inc_votes : -20 };
+
+            return request(app)
+                .patch('/api/articles/6')
+                .send(patchInput)
+                .expect(201)
+                .then(({body}) => {
+                    const articleObj = {
+                            article_id: 6,
+                            title: 'A',
+                            topic: 'mitch',
+                            author: 'icellusedkars',
+                            body: 'Delicious tin of cat food',
+                            created_at: '2020-10-18T01:00:00.000Z',
+                            votes: -20,
+                            article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700'
+                    }
+                    expect(body.article).toMatchObject(articleObj)
+                })
+        });
+        test('404 - article_id not found', () => {
+            const patchInput2 = { inc_votes : 20 };
+            return request(app)
+                .patch('/api/articles/999')
+                .send(patchInput2)
+                .expect(404)
+                .then(({body}) => {
+                    expect(body.msg).toBe('No articles found for article_id: 999')
+                })
+        });
+        test('400 - invalid input', () => {
+            const patchInput2 = { inc_votes : "cat" };
+            return request(app)
+                .patch('/api/articles/6')
+                .send(patchInput2)
+                .expect(400)
+                .then(({body}) => {
+                    expect(body.msg).toBe('invalid request')
+                })
+        })
+        test('400 - no request body.', () => {
+            return request(app)
+                .patch('/api/articles/6')
+                .send({})
+                .expect(400)
+                .then(({body}) => {
+                    expect(body.msg).toBe('invalid request')
+                })
+        })
+    });
 });

@@ -1,5 +1,6 @@
 const db = require('../db/connection');
 
+
 exports.fetchArticleById = (id) => {
     return db
     .query(`
@@ -36,4 +37,24 @@ exports.fetchAllArticles = () => {
     return db.query(query).then(({rows}) => {
         return rows;
     });
+}
+
+exports.updateVotesByArticleId = (id, update) => {
+    
+    const votesQuery = (id, update) => {
+        return db.query(`
+            UPDATE articles
+            SET votes = votes + $2
+            WHERE article_id = $1
+            RETURNING *;
+            `, [id, update.inc_votes])
+        .then(({rows}) => rows[0])
+    }
+
+
+    return Promise.all([votesQuery(id, update), this.fetchArticleById(id)])
+    .then(results => {
+        return results[0]
+    })
+ 
 }

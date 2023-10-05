@@ -1,5 +1,5 @@
 const db = require('../db/connection');
-const { fetchArticleById } = require("../models/articles.model.js")
+const { checkArticleIdExists } = require("../models/articles.model.js")
 
 exports.fetchCommentsById = (article_id) => {
   
