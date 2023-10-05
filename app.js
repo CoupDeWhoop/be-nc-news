@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const { getTopics, getEndpoints } = require("./controllers/topics.controller.js");
 const { getArticleById, getArticles, patchVotesByArticleId} = require("./controllers/articles.controller.js");
-const { getCommentsById, postComment } = require("./controllers/comments.controller.js");
+const { getCommentsById, postComment, deleteCommentByCommentId } = require("./controllers/comments.controller.js");
 
 app.use(express.json());
 
@@ -20,6 +20,8 @@ app.post('/api/articles/:article_id/comments', postComment)
 
 app.patch('/api/articles/:article_id', patchVotesByArticleId)
 
+app.delete('/api/comments/:comment_id', deleteCommentByCommentId)
+
 app.all('/*', (req, res, next) => {
     res.status(404).send({msg: 'path not found'})
 })
@@ -31,7 +33,9 @@ app.use((err, req, res, next) => {
         res.status(404).send({msg: "provided key not found"})
     } else if (err.status) {
         res.status(err.status).send(err)
-    }
+    } else {
+        res.status(500).send({ msg: "internal server error" });
+      }
 });
 
 module.exports = app;
