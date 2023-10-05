@@ -3,12 +3,15 @@ const app = express();
 const { getTopics, getEndpoints } = require("./controllers/topics.controller.js");
 const { getArticleById, getArticles, patchVotesByArticleId} = require("./controllers/articles.controller.js");
 const { getCommentsById, postComment, deleteCommentByCommentId } = require("./controllers/comments.controller.js");
+const { getUsers } = require("./controllers/users.controller.js")
 
 app.use(express.json());
 
 app.get('/api', getEndpoints)
 
 app.get('/api/topics', getTopics);
+
+app.get('/api/users', getUsers)
 
 app.get('/api/articles/:article_id', getArticleById)
 
@@ -27,6 +30,7 @@ app.all('/*', (req, res, next) => {
 })
 
 app.use((err, req, res, next) => {
+    console.log(err)
     if (err.code === "22P02" || err.code === "23502") {
         res.status(400).send({msg: "invalid request"})
     } else if (err.code === "23503") {

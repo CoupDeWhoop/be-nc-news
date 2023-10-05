@@ -52,6 +52,22 @@ describe('GET requests', () => {
         })
     })
 
+    describe("GET /api/users", () => {
+        test.only('200 - should respond with an array of user objects', () => {
+            return request(app)
+            .get("/api/users")
+            .expect(200)
+            .then(({body}) => {
+                expect(body.users).toHaveLength(4)
+                body.users.forEach((user) => {
+                    expect(user).toHaveProperty("username", expect.any(String))
+                    expect(user).toHaveProperty("name", expect.any(String))
+                    expect(user).toHaveProperty("avatar_url", expect.any(String))
+                }) 
+            })
+        });
+    })
+
     describe('GET /api/articles/:article_id', () => {
         test('200 - should respond with an object containing the correct properties', () => {
             return request(app)
@@ -91,7 +107,7 @@ describe('GET requests', () => {
     });
 
     describe('GET /api/articles', () => {
-        test('status 200 - should respond with array of articles, sorted by date in descending order.', () => {
+        test('200 - should respond with array of articles, sorted by date in descending order.', () => {
             return request(app)
             .get("/api/articles")
             .expect(200)
@@ -350,3 +366,4 @@ describe('DELETE', () => {
         });
     });
 });
+
