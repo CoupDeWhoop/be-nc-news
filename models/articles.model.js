@@ -1,4 +1,5 @@
 const db = require('../db/connection');
+const { checkTopicExists } = require('./topics.model');
 
 
 exports.fetchArticleById = (id) => {
@@ -36,18 +37,21 @@ exports.fetchAllArticles = (topic) => {
         ON articles.article_id = comments.article_id`
 
     if (topic) {
-        queryValues.push(topic)
-        queryStr += ` WHERE articles.topic = $1`
+        return checkTopicExists(topic)
+        .then(() => {
+            queryValues.push(topic)
+            queryStr += ` WHERE articles.topic = $1`
+            queryStr += ` GROUP BY articles.article_id ORDER BY articles.created_at DESC;`;
+            return db.query(queryStr, queryValues).then(({rows}) => {
+                return rows;
+            });
+        })
+    } else {
+        queryStr += ` GROUP BY articles.article_id ORDER BY articles.created_at DESC;`;
+        return db.query(queryStr, queryValues).then(({rows}) => {
+            return rows;
+        });
     }
-    queryStr += ` GROUP BY articles.article_id
-    ORDER BY articles.created_at DESC;`;
-
-    return db.query(queryStr, queryValues).then(({rows}) => {
-        if (rows.length === 0) {
-            return Promise.reject({status: 200, msg: `topic not found`})
-        }
-        return rows;
-    });
 }
 
 exports.updateVotesByArticleId = (id, update = 0) => {    

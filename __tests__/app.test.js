@@ -127,6 +127,9 @@ describe('GET requests', () => {
                 expect(body.articles).toBeSorted({ key: "created_at", descending: true })
             })
         });
+    });
+
+    describe('GET /api/articles?topic=query', () => {
         test('200 - articles endpoint should accept a topic query, filtering by specified value', () => {
             return request(app)
             .get("/api/articles?topic=mitch")
@@ -147,15 +150,22 @@ describe('GET requests', () => {
                 expect(body.articles).toBeSorted({ key: "created_at", descending: true })
             })
         })
-        test('200 - topic query does not match any articles', () => {
+        test("200 -  topic query exists but not does not appear in any articles", () => {
+            return request(app)
+            .get("/api/articles?topic=paper")
+            .expect(200)
+            .then(({ body }) => {
+                expect(!body)
+            })
+        })
+        test('404 - topic query does not match any topics', () => {
             return request(app)
             .get("/api/articles?topic=trombone")
-            .expect(200)
+            .expect(404)
             .then(({ body }) => {
                 expect(body.msg).toBe('topic not found')
             })
         })
-
     });
 
     describe('GET /api/articles/:article_id/comments', () => {
