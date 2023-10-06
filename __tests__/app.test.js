@@ -53,7 +53,7 @@ describe('GET requests', () => {
     })
 
     describe("GET /api/users", () => {
-        test.only('200 - should respond with an array of user objects', () => {
+        test('200 - should respond with an array of user objects', () => {
             return request(app)
             .get("/api/users")
             .expect(200)
@@ -127,18 +127,21 @@ describe('GET requests', () => {
                 expect(body.articles).toBeSorted({ key: "created_at", descending: true })
             })
         });
-        test('200 - should accept a topic query and respond with ', () => {
+    });
+
+    describe('GET /api/articles?topic=query', () => {
+        test('200 - articles endpoint should accept a topic query, filtering by specified value', () => {
             return request(app)
-            .get("/api/articles")
+            .get("/api/articles?topic=mitch")
             .expect(200)
-            .then(({body}) => {
-                expect(body.articles).toHaveLength(13)
+            .then(({ body }) => {
+                expect(body.articles).toHaveLength(12)
                 body.articles.forEach((article) => {
+                    expect(article).toHaveProperty("topic", 'mitch')
                     expect(article).toHaveProperty("author", expect.any(String))
                     expect(article).toHaveProperty("title", expect.any(String))
                     expect(article).toHaveProperty("article_id", expect.any(Number))
                     expect(article).not.toHaveProperty("body")
-                    expect(article).toHaveProperty("topic", expect.any(String))
                     expect(article).toHaveProperty("created_at", expect.any(String))
                     expect(article).toHaveProperty("votes", expect.any(Number))
                     expect(article).toHaveProperty("article_img_url", expect.any(String))
@@ -146,7 +149,23 @@ describe('GET requests', () => {
                 }) 
                 expect(body.articles).toBeSorted({ key: "created_at", descending: true })
             })
-        });
+        })
+        test("200 -  topic query exists but not does not appear in any articles", () => {
+            return request(app)
+            .get("/api/articles?topic=paper")
+            .expect(200)
+            .then(({ body }) => {
+                expect(!body)
+            })
+        })
+        test('404 - topic query does not match any topics', () => {
+            return request(app)
+            .get("/api/articles?topic=trombone")
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe('topic not found')
+            })
+        })
     });
 
     describe('GET /api/articles/:article_id/comments', () => {
