@@ -155,7 +155,6 @@ describe('GET requests', () => {
                 expect(body.msg).toBe('topic not found')
             })
         })
-
     });
 
     describe('GET /api/articles/:article_id/comments', () => {
