@@ -33,7 +33,6 @@ The API is available at:
 
 - **DELETE /api/comments/:comment_id**: Deletes a comment.
 
-You can use these Markdown-formatted descriptions in your README file for a clear and organized presentation.
 
 ## Setup & Installation
 If you would like to install this project locally you should clone the repository using the following link
