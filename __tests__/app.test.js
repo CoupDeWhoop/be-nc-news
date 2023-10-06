@@ -127,6 +127,26 @@ describe('GET requests', () => {
                 expect(body.articles).toBeSorted({ key: "created_at", descending: true })
             })
         });
+        test('200 - should accept a topic query and respond with ', () => {
+            return request(app)
+            .get("/api/articles")
+            .expect(200)
+            .then(({body}) => {
+                expect(body.articles).toHaveLength(13)
+                body.articles.forEach((article) => {
+                    expect(article).toHaveProperty("author", expect.any(String))
+                    expect(article).toHaveProperty("title", expect.any(String))
+                    expect(article).toHaveProperty("article_id", expect.any(Number))
+                    expect(article).not.toHaveProperty("body")
+                    expect(article).toHaveProperty("topic", expect.any(String))
+                    expect(article).toHaveProperty("created_at", expect.any(String))
+                    expect(article).toHaveProperty("votes", expect.any(Number))
+                    expect(article).toHaveProperty("article_img_url", expect.any(String))
+                    expect(article).toHaveProperty("comment_count", expect.any(Number))
+                }) 
+                expect(body.articles).toBeSorted({ key: "created_at", descending: true })
+            })
+        });
     });
 
     describe('GET /api/articles/:article_id/comments', () => {
