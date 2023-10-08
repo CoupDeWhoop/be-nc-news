@@ -1,4 +1,5 @@
 const { fetchArticleById, fetchAllArticles, updateVotesByArticleId } = require("../models/articles.model.js")
+const { checkTopicExists } = require('../models/topics.model.js');
 
 exports.getArticleById = (req, res, next) => {
     const  { article_id } = req.params;
@@ -10,10 +11,16 @@ exports.getArticleById = (req, res, next) => {
 
 exports.getArticles = (req, res, next) => {
     const { topic } = req.query;
-    fetchAllArticles(topic) 
-        .then((articles) => res.status(200).send({articles}))
-        .catch(err => next(err));
 
+    // to avoid repeating code the result of the promise is stored in the promise variable
+    // if topic doesn't exist code ends here
+    const fetchArticlesPromise = topic
+    ? checkTopicExists(topic).then(() => fetchAllArticles(topic))
+    : fetchAllArticles();
+
+    fetchArticlesPromise
+        .then((articles) => res.status(200).send({ articles }))
+        .catch((err) => next(err));
 }
 
 exports.patchVotesByArticleId = (req, res, next) => {
