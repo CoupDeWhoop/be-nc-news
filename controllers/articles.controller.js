@@ -12,11 +12,11 @@ exports.getArticleById = (req, res, next) => {
 exports.getArticles = (req, res, next) => {
     const { topic } = req.query;
 
-    // to avoid repeating code the result of the promise is stored in the promise variable
-    // if topic doesn't exist code ends here
-    const fetchArticlesPromise = topic
-    ? checkTopicExists(topic).then(() => fetchAllArticles(topic))
-    : fetchAllArticles();
+    if (topic) {
+        fetchArticlesPromise = checkTopicExists(topic).then(() => fetchAllArticles(topic))
+    } else {
+        fetchArticlesPromise = fetchAllArticles();
+    }
 
     fetchArticlesPromise
         .then((articles) => res.status(200).send({ articles }))
