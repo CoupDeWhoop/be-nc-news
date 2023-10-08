@@ -146,6 +146,9 @@ describe('GET requests', () => {
                 expect(body.articles).toBeSorted({ key: "created_at", descending: true })
             })
         });
+        test('200 - articles endpoint should accept a sortby which overrides the default - created_at', () => {
+
+        })
     });
 
     describe('GET /api/articles?topic=query', () => {
@@ -174,7 +177,7 @@ describe('GET requests', () => {
             .get("/api/articles?topic=paper")
             .expect(200)
             .then(({ body }) => {
-                expect(!body)
+                expect(body.articles).toEqual([])
             })
         })
         test('404 - topic query does not match any topics', () => {
