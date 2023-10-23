@@ -1,4 +1,5 @@
 const db = require('../db/connection');
+const { checkTopicExists } = require('../models/topics.model.js');
 
 
 
@@ -33,29 +34,50 @@ exports.fetchArticleById = (id) => {
 }
 
 
-exports.fetchAllArticles = (topic) => {
-    const queryValues = [];
-    let queryStr = `
-        SELECT 
-        articles.author,
-        articles.title,
-        articles.article_id,
-        articles.topic,
-        articles.created_at,
-        articles.votes,
-        articles.article_img_url,
-        CAST (COUNT(comments.article_id) AS INT) AS comment_count 
+exports.fetchAllArticles = (topic, sort_by='created_at') => {
+    const validSortBys = {
+        created_at: 'created_at',
+        title: 'title',
+        author: 'author',
+        article_id: 'article_id',
+        topic: 'topic',
+        votes: 'votes',
+        comment_count: 'comment_count',
+      };
+    
+      if (!(sort_by in validSortBys)) {
+        return Promise.reject({ status: 400, msg: 'Invalid sort by query' });
+      }
+    
+      const queryValues = [];
+      let queryStr = `
+        SELECT
+          articles.author,
+          articles.title,
+          articles.article_id,
+          articles.topic,
+          articles.created_at,
+          articles.votes,
+          articles.article_img_url,
+          CAST(COUNT(comments.article_id) AS INT) AS comment_count
         FROM articles
         LEFT JOIN comments
-        ON articles.article_id = comments.article_id`
+        ON articles.article_id = comments.article_id`;
+
+    let checkTopicPromise = Promise.resolve(); // this allows us to deal with the aynschronous checkTopicExists()
 
     if (topic) {
-            queryValues.push(topic)
-            queryStr += ` WHERE articles.topic = $1`
+      checkTopicPromise = checkTopicExists(topic).then(() => {
+        queryValues.push(topic);
+        queryStr += ' WHERE articles.topic = $1';
+      });
     }
-    queryStr += ` GROUP BY articles.article_id ORDER BY articles.created_at DESC;`;
-    return db.query(queryStr, queryValues).then(({rows}) => {
+  
+    return checkTopicPromise.then(() => {
+      queryStr += ` GROUP BY articles.article_id ORDER BY ${validSortBys[sort_by]} DESC;`;
+      return db.query(queryStr, queryValues).then(({ rows }) => {
         return rows;
+      });
     });
 }
 
