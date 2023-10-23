@@ -6,12 +6,12 @@ const { getArticleById, getArticles, patchVotesByArticleId} = require("./control
 const { getCommentsById, postComment, deleteCommentByCommentId } = require("./controllers/comments.controller.js");
 const { getUsers } = require("./controllers/users.controller.js")
 
+app.use(cors());
 app.use(express.json());
 
 app.get('/api', getEndpoints)
 
 app.get('/api/topics', getTopics);
-
 app.get('/api/users', getUsers)
 
 app.get('/api/articles/:article_id', getArticleById)
