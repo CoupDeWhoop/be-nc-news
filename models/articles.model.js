@@ -37,6 +37,7 @@ exports.fetchArticleById = (id) => {
 exports.fetchAllArticles = (topic, sort_by='created_at') => {
     const validSortBys = {
         created_at: 'created_at',
+        date: 'created_at',
         title: 'title',
         author: 'author',
         article_id: 'article_id',
