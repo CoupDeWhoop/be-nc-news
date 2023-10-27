@@ -81,6 +81,7 @@ exports.fetchAllArticles = (topic, sort_by='created_at', order='desc') => {
   
     return checkTopicPromise.then(() => {
       queryStr += ` GROUP BY articles.article_id ORDER BY ${validSortBys[sort_by]} ${validOrder[order]};`;
+      console.log(queryStr)
       return db.query(queryStr, queryValues).then(({ rows }) => {
         return rows;
       });
