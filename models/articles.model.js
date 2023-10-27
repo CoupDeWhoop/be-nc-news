@@ -34,7 +34,7 @@ exports.fetchArticleById = (id) => {
 }
 
 
-exports.fetchAllArticles = (topic, sort_by='created_at') => {
+exports.fetchAllArticles = (topic, sort_by='created_at', order='desc') => {
     const validSortBys = {
         created_at: 'created_at',
         date: 'created_at',
@@ -45,6 +45,11 @@ exports.fetchAllArticles = (topic, sort_by='created_at') => {
         votes: 'votes',
         comment_count: 'comment_count',
       };
+
+      const validOrder = {
+        desc: 'desc' ,
+        asc: 'asc'
+      }
     
       if (!(sort_by in validSortBys)) {
         return Promise.reject({ status: 400, msg: 'Invalid sort by query' });
@@ -75,7 +80,7 @@ exports.fetchAllArticles = (topic, sort_by='created_at') => {
     }
   
     return checkTopicPromise.then(() => {
-      queryStr += ` GROUP BY articles.article_id ORDER BY ${validSortBys[sort_by]} DESC;`;
+      queryStr += ` GROUP BY articles.article_id ORDER BY ${validSortBys[sort_by]} ${validOrder[order]};`;
       return db.query(queryStr, queryValues).then(({ rows }) => {
         return rows;
       });
