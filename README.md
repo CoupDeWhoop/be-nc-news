@@ -5,8 +5,11 @@
 This is RESTful API written in Express & Node.js using the versions Node v20.5.1 and Postgres v16. It is recommended to use these versions as a minimum.
 
 The following extension allows for easier viewing of the provided JSON objects in your browser:
+```http
 
-> ```https://chrome.google.com/webstore/detail/json-formatter/bcjindcccaagfpapjjmafapmmgkkhgoa```
+https://chrome.google.com/webstore/detail/json-formatter/bcjindcccaagfpapjjmafapmmgkkhgoa
+
+```
 
 The API is available at:
 
