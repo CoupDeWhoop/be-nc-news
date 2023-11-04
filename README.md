@@ -5,15 +5,14 @@
 This is RESTful API written in Express & Node.js using the versions Node v20.5.1 and Postgres v16. It is recommended to use these versions as a minimum.
 
 The following extension allows for easier viewing of the provided JSON objects in your browser:
-```http
 
-https://chrome.google.com/webstore/detail/json-formatter/bcjindcccaagfpapjjmafapmmgkkhgoa
+<a href="https://chrome.google.com/webstore/detail/json-formatter/bcjindcccaagfpapjjmafapmmgkkhgoa" style="background-color: transparent; color: #0366d6; text-decoration: none; padding: 0; border: none;">JSON formatter from Chrome Webstore</a>
 
-```
 
 The API is available at:
 
->```https://nc-news-api-zlkx.onrender.com/```
+[NC News API](https://nc-news-api-zlkx.onrender.com/)
+
 
 ## Available endpoints
 
@@ -38,23 +37,31 @@ The API is available at:
 
 
 ## Setup & Installation
-If you would like to install this project locally you should clone the repository using the following link
+If you would like to install this project locally you should clone the repository using the following:
 
-> ```https://github.com/CoupDeWhoop/be-nc-news.git```
+```
+git clone https://github.com/CoupDeWhoop/be-nc-news.git
+```
 
 Ensure you are inside the directory and the run the following command to install the required dependencies
 
-> ```npm install```
+```
+npm install
+```
 
 You will need to create two environmant variable files. Please run the following commands:
 
-> ```echo "PGDATABASE = nc_news_test" >> .env.test```
+```
+echo "PGDATABASE = nc_news_test" >> .env.test
 
-> ```echo "PGDATABASE = nc_news" >> .env.development```
+echo "PGDATABASE = nc_news" >> .env.development
+```
 
 In order to setup and seed the test and development databases please run the following commands:
 
-> ```npm run setup-dbs```
+```
+npm run setup-dbs
 
-> ``` npm run seed```
+npm run seed
+```
 
